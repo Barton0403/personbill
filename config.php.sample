@@ -1,0 +1,45 @@
+<?php
+
+return [
+    'db' => [
+        // 默认数据连接标识
+        'default'     => 'mysql',
+        // 数据库连接信息
+        'connections' => [
+            'mysql' => [
+                // 数据库类型
+                'type'     => 'mysql',
+                // 主机地址
+                'hostname' => '',
+                // 用户名
+                'username' => '',
+                'password' => '',
+                'hostport' => '',
+                // 数据库名
+                'database' => '',
+                // 数据库编码默认采用utf8
+                'charset'  => 'utf8',
+                // 数据库表前缀
+                'prefix'   => '',
+                // 数据库调试模式
+                'debug'    => false,
+            ],
+        ],
+    ],
+
+    'alipay' => [
+        'account' => '支付宝账户',
+        'filename' => 'alipay_record.csv',
+    ],
+
+    'wechat' => [
+        'account' => '微信账户',
+        'filename' => '微信支付账单(20210501-20210529).csv',
+    ],
+
+    // 建设银行
+    'ccb' => [
+        'account' => '尾号4182',
+        'filename' => '建设银行5月账单.xls',
+    ],
+];
