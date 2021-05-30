@@ -1,0 +1,13 @@
+{
+    "name": "liche/personbill",
+    "authors": [
+        {
+            "name": "barton",
+            "email": "lichenghao0403@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.17",
+        "topthink/think-orm": "^2.0"
+    }
+}
