@@ -20,12 +20,12 @@ function loadAliPay()
     for ($i=3; $i<=$sheet->getHighestRow() - 21; $i++) {
         $arr = explode(',', $sheet->getCell('A'.$i)->getValue());
         $type_str = trim($arr[0]);
-        $type = $type_str == '收入' ? 1 : $type_str == '支出' ? 2 : 0;
+        $type = $type_str == '收入' ? 1 : ($type_str == '支出' ? 2 : 0);
 
         $trans_time_str = trim($arr[7]);
         $trans_time = strtotime($trans_time_str);
 
-        Db::name('personbill')->insert([
+        $data = [
             'account' => $config['alipay']['account'],
             'account_type_name' => '支付宝', // 账户类型
             'trans_type_name' => trim($arr[3]), // 交易方式
@@ -36,7 +36,8 @@ function loadAliPay()
             'trans_no' => trim($arr[5]),
             'merchant_order_no' => trim($arr[6]),
             'trans_time' => $trans_time
-        ]);
+        ];
+        Db::name('personbill')->insert($data);
     }
 }
 
@@ -52,7 +53,7 @@ function loadWeChat()
     for ($i=18; $i<=$sheet->getHighestRow(); $i++) {
         $arr = explode(',', $sheet->getCell('A'.$i)->getValue());
         $type_str = trim($arr[4]);
-        $type = $type_str == '收入' ? 1 : $type_str == '支出' ? 2 : 0;
+        $type = $type_str == '收入' ? 1 : ($type_str == '支出' ? 2 : 0);
 
         $trans_time_str = trim($arr[0]);
         $trans_time = strtotime($trans_time_str);
