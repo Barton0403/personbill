@@ -33,8 +33,8 @@ function loadAliPay()
             'type' => $type, // 交易类型 1收入 2支出
             'description' => trim($arr[2]),
             'amount' => trim($arr[4]) * ($type == 2 ? -1 : 1),
-            'trans_no' => trim($arr[5]),
-            'merchant_order_no' => trim($arr[6]),
+            'trans_no' => trim($arr[5], " \t\n\r\0\x0B\""),
+            'merchant_order_no' => trim($arr[6], " \t\n\r\0\x0B\""),
             'trans_time' => $trans_time
         ];
         Db::name('personbill')->insert($data);
@@ -58,7 +58,7 @@ function loadWeChat()
         $trans_time_str = trim($arr[0]);
         $trans_time = strtotime($trans_time_str);
 
-        Db::name('personbill')->insert([
+        $data = [
             'account' => $config['wechat']['account'],
             'account_type_name' => '微信',
             'trans_type_name' => trim($arr[6]),
@@ -69,7 +69,8 @@ function loadWeChat()
             'trans_no' => trim($arr[8]),
             'merchant_order_no' => trim($arr[9]),
             'trans_time' => $trans_time
-        ]);
+        ];
+        Db::name('personbill')->insert($data);
     }
 }
 
@@ -101,9 +102,17 @@ function loadCCB()
 
 function main()
 {
-    loadCCB();
-    loadAliPay();
-    loadWeChat();
+    global $config;
+
+    if (file_exists($config['ccb']['filename'])) {
+        loadCCB();
+    }
+    if (file_exists($config['alipay']['filename'])) {
+        loadAliPay();
+    }
+    if (file_exists($config['wechat']['filename'])) {
+        loadWeChat();
+    }
 }
 
 main();
