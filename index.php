@@ -7,7 +7,7 @@ use think\facade\Db;
 $config = include 'config.php';
 Db::setConfig($config['db']);
 
-function loadAliPay()
+function loadAliPay2()
 {
     global $config;
 
@@ -41,6 +41,48 @@ function loadAliPay()
     }
 }
 
+function loadAlipay()
+{
+    global $config;
+
+    // 支付宝
+    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+    $reader->setInputEncoding('GBK');
+    $reader->setDelimiter('`');
+    $spreadsheet = $reader->load($config['alipay']['filename']);
+    $sheet = $spreadsheet->getActiveSheet();
+    for ($i=3; $i<=$sheet->getHighestRow() - 21; $i++) {
+        $arr = explode(',', $sheet->getCell('A'.$i)->getValue());
+        $type_str = trim($arr[0]);
+        $type = $type_str == '收入' ? 1 : ($type_str == '支出' ? 2 : 0);
+
+        $trans_time_str = trim($arr[10]);
+        $trans_time = strtotime($trans_time_str);
+
+        $data = [
+            'account' => $config['alipay']['account'],
+            'account_type_name' => '支付宝', // 账户类型
+            'trans_type_name' => trim($arr[4]), // 交易方式
+            'trans_person' => trim($arr[1]), // 交易对方
+            'type' => $type, // 交易类型 1收入 2支出
+            'description' => trim($arr[3]),
+            'amount' => trim($arr[5]) * ($type == 2 ? -1 : 1),
+            'trans_no' => trim($arr[8], " \t\n\r\0\x0B\""),
+            'merchant_order_no' => trim($arr[9], " \t\n\r\0\x0B\""),
+            'trans_time' => $trans_time
+        ];
+        try {
+            Db::name('personbill')->insert($data);
+        } catch (\think\db\exception\PDOException $e) {
+            if ($e->getCode() == 10501) {
+                continue;
+            }
+
+            throw $e;
+        }
+    }
+}
+
 // 微信
 function loadWeChat()
 {
@@ -70,7 +112,15 @@ function loadWeChat()
             'merchant_order_no' => trim($arr[9]),
             'trans_time' => $trans_time
         ];
-        Db::name('personbill')->insert($data);
+        try {
+            Db::name('personbill')->insert($data);
+        } catch (\think\db\exception\PDOException $e) {
+            if ($e->getCode() == 10501) {
+                continue;
+            }
+
+            throw $e;
+        }
     }
 }
 
@@ -104,12 +154,12 @@ function main()
 {
     global $config;
 
-    if (file_exists($config['ccb']['filename'])) {
-        loadCCB();
-    }
-    if (file_exists($config['alipay']['filename'])) {
-        loadAliPay();
-    }
+//    if (file_exists($config['ccb']['filename'])) {
+//        loadCCB();
+//    }
+//    if (file_exists($config['alipay']['filename'])) {
+//        loadAliPay();
+//    }
     if (file_exists($config['wechat']['filename'])) {
         loadWeChat();
     }
