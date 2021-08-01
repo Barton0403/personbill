@@ -1,5 +1,9 @@
 <?php
-
+error_reporting(E_ALL);
+date_default_timezone_set('Asia/Shanghai');
+echo date_default_timezone_get();
+echo strtotime('2021-08-01 09:51:00');
+exit();
 require __DIR__ . '/vendor/autoload.php';
 
 use think\facade\Db;
@@ -157,9 +161,9 @@ function main()
 //    if (file_exists($config['ccb']['filename'])) {
 //        loadCCB();
 //    }
-//    if (file_exists($config['alipay']['filename'])) {
-//        loadAliPay();
-//    }
+    if (file_exists($config['alipay']['filename'])) {
+        loadAliPay();
+    }
     if (file_exists($config['wechat']['filename'])) {
         loadWeChat();
     }
